@@ -1,0 +1,213 @@
+install.packages ("survival")
+install.packages ("dplyr")
+install.packages ("data.table")
+install.packages ("survMisc")
+install.packages ("plotrix")
+install.packages ("survminer")
+install.packages("ggplot2")
+library (survival)
+library (dplyr)
+library (survMisc)
+library (data.table)
+library (plotrix)
+library(survminer)
+library(ggplot2)
+CTresults <- read.csv("C:/Users/ALIENWARE/OneDrive - Imperial College London/Project1/Clinical Data/CT Results.csv")
+HH_ov_clinical <- read.csv("C:/Users/ALIENWARE/OneDrive - Imperial College London/Project1/Clinical Data/HH_ov_clinical.csv")
+same_index <- Reduce (intersect, list (CTresults$Patient_ID,HH_ov_clinical$PatientID))
+HH_ov_clinical <- HH_ov_clinical [HH_ov_clinical$PatientID %in% same_index,]
+HH_ov_clinical_results <- merge (HH_ov_clinical, CTresults, by.x = "PatientID", by.y = "Patient_ID", all.x = T)
+same_index
+
+#Cutoff value of SMA - lowest quartile of the cohort = 84.93
+summary (HH_ov_clinical_results$lite_ai_area_cm2)
+
+#sarcopenia identified by SMA
+sarcopenia_SMA <- HH_ov_clinical_results [which (HH_ov_clinical_results$lite_ai_area_cm2 < 84.93), ]
+nonsarcopenia_SMA <- HH_ov_clinical_results [which (HH_ov_clinical_results$lite_ai_area_cm2 >= 84.93), ]
+nrow(sarcopenia_SMA)
+nrow (nonsarcopenia_SMA)
+
+#sarcopenia identified by SMD
+sarcopenia_SMD <- HH_ov_clinical_results[which(HH_ov_clinical_results$lite_ai_density_HU < cutoff_SMD),]
+nonsarcopenia_SMD <- HH_ov_clinical_results[which(HH_ov_clinical_results$lite_ai_density_HU >= cutoff_SMD),]
+
+
+
+
+summary (sarcopenia_SMA$Age.at.initial.diagnosis)
+sd (sarcopenia_SMA$Age.at.initial.diagnosis)
+
+nrow(sarcopenia_SMA[which(sarcopenia_SMA$PFS.event == 1),])
+
+factor(nonsarcopenia_SMA$Primary.chemotherapy.outcome)
+nrow (nonsarcopenia_SMD[which (nonsarcopenia_SMD$PFS.event == 0),])
+summary (nonsarcopenia_SMA$Progression.free.survival..days.)
+wilcox.test(nonsarcopenia_SMA[which(sarcopenia_SMA$PFS.event == 1),]$Progression.free.survival..days.,sarcopenia_SMA[which(sarcopenia_SMA$PFS.event == 1),]$Progression.free.survival..days.)
+
+sd (nonsarcopenia_SMD$lite_ai_density_HU)
+      range (sarcopenia_SMD[which(sarcopenia_SMD$Progression.free.survival..days.!= "NA" & sarcopenia_SMD$PFS.event == 1),]$Progression.free.survival..days.)
+range (sarcopenia_SMD[which(sarcopenia_SMD$Ca125 != "NA"),]$Ca125)
+sd(sarcopenia_SMD$lite_ai_density_HU)
+
+wilcox.test(nonsarcopenia_SMA$Ca125,sarcopenia_SMA$Ca125)
+
+nrow (nonsarcopenia_SMD[which (nonsarcopenia_SMD$Primary.chemotherapy.outcome == "progressive.disease"),])/nrow(nonsarcopenia_SMD)*100
+nrow (nonsarcopenia_SMD[which (nonsarcopenia_SMD$Primary.chemotherapy.outcome == "progressive.disease"),])
+factor (HH_ov_clinical_results$Primary.chemotherapy.outcome)
+
+#Test normality of age
+shapiro.test(nonsarcopenia_SMA$Age.at.initial.diagnosis)
+shapiro.test(sarcopenia_SMA$Age.at.initial.diagnosis)
+t.test(nonsarcopenia_SMA$Age.at.initial.diagnosis, sarcopenia_SMA$Age.at.initial.diagnosis)
+shapiro.test(HH_ov_clinical_results$Age.at.initial.diagnosis)
+shapiro.test(nonsarcopenia_SMD$Age.at.initial.diagnosis)
+shapiro.test(sarcopenia_SMD$Age.at.initial.diagnosis)
+t.test(nonsarcopenia_SMD$Age.at.initial.diagnosis, sarcopenia_SMD$Age.at.initial.diagnosis)
+
+table.stage_SMA <- matrix (c(3,5,11,2,93,24,37,18), nrow = 2, ncol = 4)
+table.stage_SMA
+chisq.test(table.stage_SMA)$expected
+fisher.test(table.stage_SMA)
+
+table.stage_SMD <- matrix (c(7,1,12,1,95,22,44,11), nrow = 2, ncol = 4)
+table.stage_SMD
+chisq.test(table.stage_SMD)$expected
+fisher.test(table.stage_SMD)
+
+table.cancer_grade <- matrix (c(143,48,4,1), nrow = 2, ncol = 2)
+table.cancer_grade
+chisq.test(table.cancer_grade)$expected
+fisher.test(table.cancer_grade)
+
+table.surgery <- matrix (c(108, 36,29,12), nrow = 2, ncol = 2)
+table.surgery
+chisq.test(table.surgery)
+
+table.celluarity<- matrix (c(80,27,45,14), nrow = 2, ncol = 2)
+table.celluarity
+chisq.test(table.celluarity)
+fisher.test(table.outcome)
+
+summary(nonsarcopenia_SMA$Ca125)
+shapiro.test(sarcopenia_SMD$Ca125)
+wilcox.test(nonsarcopenia_SMD$Ca125, sarcopenia_SMD$Ca125,paired = FALSE)
+
+table.tumour <- matrix(c(90,17,51,8), nrow =2, ncol = 2)
+table.tumour
+chisq.test(table.tumour)
+
+summary(sarcopenia_SMA$lite_ai_area_cm2)
+shapiro.test(nonsarcopenia_SMA$lite_ai_area_cm2)
+shapiro.test(sarcopenia_SMA$lite_ai_area_cm2)
+wilcox.test(nonsarcopenia_SMA$lite_ai_area_cm2, sarcopenia_SMA$lite_ai_area_cm2)
+
+summary(sarcopenia_SMA$lite_ai_density_HU)
+sd (sarcopenia_SMA$lite_ai_density_HU)
+shapiro.test(sarcopenia_SMA$lite_ai_density_HU)
+t.test (nonsarcopenia_SMA$lite_ai_density_HU,sarcopenia_SMA$lite_ai_density_HU)
+
+table.os <- matrix (c(59,15,87,34), nrow = 2, ncol = 2)
+table.os
+chisq.test(table.os)
+table.pfs <- matrix(c(68,26,65,22), nrow = 2, ncol = 2)
+table.pfs
+chisq.test(table.pfs)
+
+summary (sarcopenia_SMD[which (sarcopenia_SMD$OS.event == 1),]$Overall.survival..days.)
+wilcox.test(sarcopenia_SMD[which (sarcopenia_SMD$OS.event == 1),]$Overall.survival..days., nonsarcopenia_SMD[which (nonsarcopenia_SMD$OS.event == 1),]$Overall.survival..days.)
+
+summary(sarcopenia_SMD[which(sarcopenia_SMD$PFS.event == 1),]$Progression.free.survival..days.)
+wilcox.test(nonsarcopenia_SMD[which (nonsarcopenia_SMD$PFS.event == 1),]$Progression.free.survival..days., sarcopenia_SMD[which (sarcopenia_SMD$PFS.event == 1),]$Progression.free.survival..days.)
+
+summary(sarcopenia_SMD$Ca125)
+nrow(sarcopenia_SMA[which(sarcopenia_SMA$OS.event == 1),])
+
+
+
+OS_time <- HH_ov_clinical_results$Overall.survival..days.
+OS_event <- HH_ov_clinical_results$OS.event
+OS_object <- Surv (OS_time, OS_event)
+HH_ov_clinical_results$SMA_sarcopenia <- NA
+
+for (i in 1 : nrow(HH_ov_clinical_results)){
+  if(HH_ov_clinical_results$lite_ai_area_cm2[i] >= 84.93){
+    HH_ov_clinical_results$SMA_sarcopenia[i] <-0
+  }
+  else
+  {
+      HH_ov_clinical_results$SMA_sarcopenia[i] <-1
+    }
+}
+
+nrow(HH_ov_clinical_results[which(HH_ov_clinical_results$SMA_sarcopenia ==0),])
+
+
+SMD_sarcopenia_index <- which (HH_ov_clinical_results$lite_ai_density_HU < cutoff_SMD)
+SMD_nonsarcopenia_index <- which (HH_ov_clinical_results$lite_ai_density_HU >= cutoff_SMD)
+HH_ov_clinical_results$SMD_sarcopenia <- NA
+HH_ov_clinical_results$SMD_sarcopenia[SMD_nonsarcopenia_index] <- 0
+HH_ov_clinical_results$SMD_sarcopenia[SMD_sarcopenia_index] <- 1
+which (HH_ov_clinical_results$SMD_sarcopenia == 1)
+which (HH_ov_clinical_results$SMD_sarcopenia == 0)
+
+#OS univariate analysis
+colnames (HH_ov_clinical_results)
+age.cox <- coxph (OS_object~Age.at.initial.diagnosis, data = HH_ov_clinical_results)
+summary (age.cox)
+figo.cox <- coxph (OS_object~Stage, data = HH_ov_clinical_results)
+summary (figo.cox)
+cancer.grade.cox <- coxph (OS_object~Grade_di, data = HH_ov_clinical_results)
+summary (cancer.grade.cox)
+surgery.outcome.cox <- coxph (OS_object~Surgery.outcome, data = HH_ov_clinical_results)
+summary (surgery.outcome.cox)
+chemo.outcome.cox <- coxph (OS_object~Primary.chemotherapy.outcome, data = HH_ov_clinical_results)
+summary (chemo.outcome.cox)
+cellularity.cox <- coxph(OS_object~Cellularity, data = HH_ov_clinical_results)
+summary (cellularity.cox)
+SMA.cox <- coxph (OS_object~lite_ai_area_cm2, data = HH_ov_clinical_results)
+summary(SMA.cox)
+SMD.cox <- coxph (OS_object~lite_ai_density_HU, data = HH_ov_clinical_results)
+summary (SMD.cox)
+HH_ov_clinical_results$SMA_sarcopenia <- as.factor(HH_ov_clinical_results$SMA_sarcopenia)
+sarcopenia_SMA.cox <- coxph (OS_object~SMA_sarcopenia, data = HH_ov_clinical_results)
+summary (sarcopenia_SMA.cox)
+sarcopenia_SMD.cox <- coxph (OS_object~SMD_sarcopenia, data = HH_ov_clinical_results)
+summary (sarcopenia_SMD.cox)
+summary (HH_ov_clinical_results$lite_ai_area_cm2)
+
+#PFS univariate analysis
+PFS_object <- Surv(HH_ov_clinical_results$Progression.free.survival..days.,HH_ov_clinical_results$PFS.event)
+age.cox.pfs <- coxph (PFS_object~Age.at.initial.diagnosis, data = HH_ov_clinical_results)
+summary (age.cox.pfs)
+figo.cox.pfs <- coxph (PFS_object~Stage, data = HH_ov_clinical_results)
+summary (figo.cox.pfs)
+cancer.grade.cox.pfs <- coxph (PFS_object~Grade_di, data = HH_ov_clinical_results)
+summary (cancer.grade.cox.pfs)
+surgery.outcome.cox.pfs <- coxph (PFS_object~Surgery.outcome, data = HH_ov_clinical_results)
+summary (surgery.outcome.cox.pfs)
+chemo.outcome.cox.pfs <- coxph (PFS_object~Primary.chemotherapy.outcome, data = HH_ov_clinical_results)
+summary (chemo.outcome.cox.pfs)
+cellularity.cox.pfs <- coxph(PFS_object~Cellularity, data = HH_ov_clinical_results)
+summary (cellularity.cox.pfs)
+SMA.cox.pfs <- coxph (PFS_object~lite_ai_area_cm2, data = HH_ov_clinical_results)
+summary(SMA.cox.pfs)
+SMD.cox.pfs <- coxph (PFS_object~lite_ai_density_HU, data = HH_ov_clinical_results)
+summary (SMD.cox.pfs)
+HH_ov_clinical_results$SMA_sarcopenia <- as.factor(HH_ov_clinical_results$SMA_sarcopenia)
+sarcopenia_SMA.cox.pfs <- coxph (PFS_object~SMA_sarcopenia, data = HH_ov_clinical_results)
+summary (sarcopenia_SMA.cox.pfs)
+sarcopenia_SMD.cox.pfs <- coxph (PFS_object~SMD_sarcopenia, data = HH_ov_clinical_results)
+summary (sarcopenia_SMD.cox.pfs)
+summary (HH_ov_clinical_results$lite_ai_area_cm2)
+
+cox_OS_multi <- coxph(OS_object~Stage+Surgery.outcome+Primary.chemotherapy.outcome+lite_ai_area_cm2+SMA_sarcopenia, data = HH_ov_clinical_results)
+summary (cox_OS_multi)
+
+cox_PFS_multi <- coxph(PFS_object~Stage+Surgery.outcome+Primary.chemotherapy.outcome+lite_ai_area_cm2+SMD_sarcopenia, data = HH_ov_clinical_results)
+summary (cox_PFS_multi)
+summary (HH_ov_clinical_results$lite_ai_area_cm2)
+fit <- survfit (OS_object ~ SMA_sarcopenia, data = HH_ov_clinical_results)
+ggsurvplot(fit)
+fit
+summary (HH_ov_clinical_results$lite_ai_area_cm2)

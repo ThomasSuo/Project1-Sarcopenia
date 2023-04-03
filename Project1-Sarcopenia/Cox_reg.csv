@@ -1,0 +1,12 @@
+Risk Factors,P value,Hazard Ratio (95%CI),,,
+Overall Survival,,,,,
+FIGO stage,0.06,1.56 (0.97-2.49)        ,1.56,0.97,2.49
+Sub-optimal surgery outcome,0.55,1.21 (0.66-2.21),1.21,0.66,2.21
+Incomplete chemotherapy response,<0.001,3.22 (1.69-6.14)       ,3.22,1.69,6.14
+Skeletal muscle area,0.05,1.02 (1.00-1.03)         ,1.02,1.00,1.03
+Progression-free Survival,,,,,
+FIGO stage,0.02,1.57 (1.08-2.27)          ,1.57,1.08,2.27
+Sub-optimal surgery outcome,0.002,2.15 (1.30-3.56)          ,2.15,1.30,3.56
+Incomplete chemotherapy response,<0.001,2.78 (1.65-4.69),2.78,1.65,4.69
+Skeletal muscle area,0.06,1.01 (1.00-1.03)            ,1.01,1.00,1.03
+Sarcopenia (SMD < 29.53 HU),0.20,1.44 (0.83-2.50),1.44,0.83,2.50
